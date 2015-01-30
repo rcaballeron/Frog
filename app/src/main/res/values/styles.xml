@@ -1,0 +1,10 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="android:style/Theme.NoTitleBar.Fullscreen">
+        <!-- Customize your theme here. -->
+        <item name="android:textSize">@dimen/text_size</item>
+        <item name="android:textColor">#409020</item>
+    </style>
+
+</resources>
