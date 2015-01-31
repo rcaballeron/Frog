@@ -11,7 +11,7 @@
         android:text="@string/app_title"
         android:id="@+id/title"
         android:layout_gravity="center_horizontal"
-        android:textSize="60sp"
+        android:textSize="48sp"
         android:textColor="#ffff1a0e" />
 
     <TextView
