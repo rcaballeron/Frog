@@ -1,19 +1,32 @@
 package es.caballero.frog;
 
 import android.app.Activity;
+import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.Random;
 
 
 public class MainActivity extends Activity implements View.OnClickListener {
+    private static final int FROG_ID = 212121;
+    private static final int FROG_HEIGHT = 72;
+    private static final int FROG_WIDTH = 64;
     private int points;
     private int round;
     private int countdown;
+    private ImageView frog;
+    private Random rnd = new Random();
+    private Handler handler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,21 +43,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
     private void newGame() {
         points = 0;
         round = 1;
@@ -53,6 +51,30 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
     private void initRound() {
         countdown = 10;
+        ViewGroup container = (ViewGroup) findViewById(R.id.container);
+        container.removeAllViews();
+
+        WimmelView wv = new WimmelView(this);
+        container.addView(wv, ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT);
+        wv.setImageCount(WimmelView.NUMBER_DISTRACT_IMAGES * (10 + round));
+
+        frog = new ImageView(this);
+        frog.setId(FROG_ID);
+        frog.setImageResource(R.drawable.frog);
+        frog.setScaleType(ImageView.ScaleType.CENTER);
+        float scale = getResources().getDisplayMetrics().density;
+        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
+                Math.round(FROG_WIDTH * scale),
+                Math.round(FROG_HEIGHT * scale));
+        lp.leftMargin = rnd.nextInt(container.getWidth() - Math.round(FROG_WIDTH * scale));
+        lp.topMargin = rnd.nextInt(container.getHeight() - Math.round(FROG_HEIGHT * scale));
+        lp.gravity = Gravity.TOP + Gravity.LEFT;
+        frog.setOnClickListener(this);
+        container.addView(frog, lp);
+
+        handler.postDelayed(runnable, 1000 - round * 50);
+
         update();
     }
 
@@ -89,10 +111,40 @@ public class MainActivity extends Activity implements View.OnClickListener {
             startGame();
         } else if (v.getId() == R.id.btn_play_again) {
             showStartFragment();
+        } else if (v.getId() == FROG_ID) {
+            handler.removeCallbacks(runnable);
+            Toast.makeText(this, R.string.kissed, Toast.LENGTH_SHORT).show();
+            points += countdown * 1000;
+            round++;
+            initRound();
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        handler.removeCallbacks(runnable);
     }
 
     private void startGame() {
         newGame();
     }
+
+    private void countdown() {
+        countdown--;
+        update();
+        if (countdown <= 0) {
+            frog.setOnClickListener(null);
+            showGameOverFragment();
+        } else {
+            handler.postDelayed(runnable, 1000 - round * 50);
+        }
+    }
+
+    private Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            countdown();
+        }
+    };
 }

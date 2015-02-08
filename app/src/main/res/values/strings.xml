@@ -7,5 +7,6 @@
     <string name="btn_start">Start</string>
     <string name="app_title">Kiss The Frog</string>
     <string name="btn_play_again">Play Again</string>
+    <string name="kissed">Kissed</string>
 
 </resources>
