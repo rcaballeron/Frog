@@ -3,7 +3,8 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center_vertical">
+    android:gravity="center_vertical"
+    android:background="@drawable/background">
 
     <TextView
         android:layout_width="wrap_content"
@@ -12,12 +13,24 @@
         android:id="@+id/title"
         android:layout_gravity="center"
         android:textSize="48sp"
-        android:textColor="#ffff1a0e" />
+        android:textColor="@color/title" />
+
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView"
+        android:src="@drawable/frog"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:text="@string/btn_start"
-        android:id="@+id/btn_start" />
+        android:id="@+id/btn_start"
+        android:background="@drawable/button"
+        android:textColor="@color/title"/>
+
+
 </LinearLayout>

@@ -1,6 +1,7 @@
 package es.caballero.frog;
 
 import android.app.Activity;
+import android.graphics.Typeface;
 import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -27,11 +28,16 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private ImageView frog;
     private Random rnd = new Random();
     private Handler handler = new Handler();
+    private Typeface ttf;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ttf = Typeface.createFromAsset(getAssets(), "JandaManateeSolid.ttf");
+        ((TextView)findViewById(R.id.countdown)).setTypeface(ttf);
+        ((TextView)findViewById(R.id.round)).setTypeface(ttf);
+        ((TextView)findViewById(R.id.points)).setTypeface(ttf);
         showStartFragment();
     }
 
@@ -93,6 +99,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
         ViewGroup container = (ViewGroup)findViewById(R.id.container);
         container.removeAllViews();
         container.addView(getLayoutInflater().inflate(R.layout.fragment_start, null));
+        ((TextView)findViewById(R.id.title)).setTypeface(ttf);
+        ((TextView)findViewById(R.id.btn_start)).setTypeface(ttf);
 
         container.findViewById(R.id.btn_start).setOnClickListener(this);
     }
@@ -101,6 +109,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
         ViewGroup container = (ViewGroup)findViewById(R.id.container);
         container.removeAllViews();
         container.addView(getLayoutInflater().inflate(R.layout.fragment_gameover, null));
+        ((TextView)findViewById(R.id.btn_play_again)).setTypeface(ttf);
+        ((TextView)findViewById(R.id.title)).setTypeface(ttf);
 
         container.findViewById(R.id.btn_play_again).setOnClickListener(this);
     }
