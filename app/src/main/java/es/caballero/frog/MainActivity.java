@@ -1,6 +1,8 @@
 package es.caballero.frog;
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
@@ -19,12 +21,12 @@ import java.util.Random;
 
 
 public class MainActivity extends Activity implements View.OnClickListener {
-    private static final int FROG_ID = 212121;
     private static final int FROG_HEIGHT = 72;
     private static final int FROG_WIDTH = 64;
     private int points;
     private int round;
     private int countdown;
+    private int highscore;
     private ImageView frog;
     private Random rnd = new Random();
     private Handler handler = new Handler();
@@ -38,6 +40,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
         ((TextView)findViewById(R.id.countdown)).setTypeface(ttf);
         ((TextView)findViewById(R.id.round)).setTypeface(ttf);
         ((TextView)findViewById(R.id.points)).setTypeface(ttf);
+        ((TextView)findViewById(R.id.help)).setTypeface(ttf);
+        ((TextView)findViewById(R.id.highscore)).setTypeface(ttf);
+        findViewById(R.id.help).setOnClickListener(this);
         showStartFragment();
     }
 
@@ -66,7 +71,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         wv.setImageCount(WimmelView.NUMBER_DISTRACT_IMAGES * (10 + round));
 
         frog = new ImageView(this);
-        frog.setId(FROG_ID);
+        frog.setId(R.id.A121212);
         frog.setImageResource(R.drawable.frog);
         frog.setScaleType(ImageView.ScaleType.CENTER);
         float scale = getResources().getDisplayMetrics().density;
@@ -93,6 +98,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
         fillTextView(R.id.points, Integer.toString(points));
         fillTextView(R.id.round, Integer.toString(round));
         fillTextView(R.id.countdown, Integer.toString(countdown * 1000));
+        loadHighScore();
+        fillTextView(R.id.highscore, Integer.toString(highscore));
     }
 
     private void showStartFragment() {
@@ -121,13 +128,54 @@ public class MainActivity extends Activity implements View.OnClickListener {
             startGame();
         } else if (v.getId() == R.id.btn_play_again) {
             showStartFragment();
-        } else if (v.getId() == FROG_ID) {
-            handler.removeCallbacks(runnable);
-            Toast.makeText(this, R.string.kissed, Toast.LENGTH_SHORT).show();
-            points += countdown * 1000;
-            round++;
-            initRound();
+        } else if (v.getId() == R.id.A121212) {
+            kissFrog();
+        } else if (v.getId() == R.id.help) {
+            showTutorial();
         }
+    }
+
+    private void showTutorial() {
+        final Dialog dialog = new Dialog(
+                this,
+                android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+        dialog.setContentView(R.layout.dialog_tutorial);
+        ((TextView)dialog.findViewById(R.id.text)).setTypeface(ttf);
+        ((TextView)dialog.findViewById(R.id.start)).setTypeface(ttf);
+        dialog.findViewById(R.id.start).setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                        startGame();
+                    }
+                }
+        );
+        dialog.show();
+    }
+
+    private void kissFrog() {
+        handler.removeCallbacks(runnable);
+        showToast(R.string.kissed);
+        points += countdown * 1000;
+        round++;
+        initRound();
+
+    }
+
+    private void showToast(int stringId) {
+        Toast toast = new Toast(this);
+        toast.setGravity(Gravity.CENTER, 0 , 0);
+        toast.setDuration(Toast.LENGTH_SHORT);
+
+        TextView textView = new TextView(this);
+        textView.setText(stringId);
+        textView.setTextColor(getResources().getColor(R.color.points));
+        textView.setTextSize(48f);
+        textView.setTypeface(ttf);
+
+        toast.setView(textView);
+        toast.show();
     }
 
     @Override
@@ -145,10 +193,28 @@ public class MainActivity extends Activity implements View.OnClickListener {
         update();
         if (countdown <= 0) {
             frog.setOnClickListener(null);
+            if (points > highscore) {
+                saveHighScore(points);
+            }
             showGameOverFragment();
         } else {
             handler.postDelayed(runnable, 1000 - round * 50);
         }
+    }
+
+    private void loadHighScore() {
+        SharedPreferences sp =getPreferences(MODE_PRIVATE);
+        highscore = sp.getInt("highscore", 0);
+    }
+
+
+
+    private void saveHighScore(int points) {
+        highscore = points;
+        SharedPreferences sp = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor e = sp.edit();
+        e.putInt("highscore", highscore);
+        e.commit();
     }
 
     private Runnable runnable = new Runnable() {

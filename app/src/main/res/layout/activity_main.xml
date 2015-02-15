@@ -37,5 +37,22 @@
         android:id="@+id/round"
         android:layout_gravity="right|top"
         android:textColor="@color/round"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="\?"
+        android:id="@+id/help"
+        android:textSize="20sp"
+        android:layout_gravity="left|bottom"
+        android:background="@drawable/button"
+        android:textColor="@color/title"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="000000"
+        android:id="@+id/highscore"
+        android:layout_gravity="center|top"
+        android:textColor="@color/highscore"/>
 
 </FrameLayout>

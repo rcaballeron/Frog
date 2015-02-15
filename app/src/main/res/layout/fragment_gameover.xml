@@ -17,5 +17,6 @@
         android:layout_height="wrap_content"
         android:text="@string/btn_play_again"
         android:id="@+id/btn_play_again"
+        android:background="@drawable/button"
         android:layout_gravity="center_horizontal" />
 </LinearLayout>
