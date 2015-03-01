@@ -12,6 +12,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -19,8 +21,12 @@ import android.widget.Toast;
 
 import java.util.Random;
 
+import es.caballero.tools.BaseGameActivity;
+import es.caballero.tools.SimpleAnimationListener;
 
-public class MainActivity extends Activity implements View.OnClickListener {
+
+public class MainActivity extends BaseGameActivity implements View.OnClickListener {
+    public static final String TYPEFACE_TITLE = "JandaManateeSolid";
     private static final int FROG_HEIGHT = 72;
     private static final int FROG_WIDTH = 64;
     private int points;
@@ -36,14 +42,21 @@ public class MainActivity extends Activity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ttf = Typeface.createFromAsset(getAssets(), "JandaManateeSolid.ttf");
-        ((TextView)findViewById(R.id.countdown)).setTypeface(ttf);
-        ((TextView)findViewById(R.id.round)).setTypeface(ttf);
-        ((TextView)findViewById(R.id.points)).setTypeface(ttf);
-        ((TextView)findViewById(R.id.help)).setTypeface(ttf);
-        ((TextView)findViewById(R.id.highscore)).setTypeface(ttf);
+
+        //Manage and assign font to textviews
+        addTypeface(TYPEFACE_TITLE);
+        setTypefaceToViews();
+
         findViewById(R.id.help).setOnClickListener(this);
         showStartFragment();
+    }
+
+    private void setTypefaceToViews() {
+        setTypeface((TextView) findViewById(R.id.countdown), TYPEFACE_TITLE);
+        setTypeface((TextView) findViewById(R.id.round), TYPEFACE_TITLE);
+        setTypeface((TextView) findViewById(R.id.points), TYPEFACE_TITLE);
+        setTypeface((TextView) findViewById(R.id.help), TYPEFACE_TITLE);
+        setTypeface((TextView) findViewById(R.id.highscore), TYPEFACE_TITLE);
     }
 
 
@@ -105,10 +118,23 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private void showStartFragment() {
         ViewGroup container = (ViewGroup)findViewById(R.id.container);
         container.removeAllViews();
-        container.addView(getLayoutInflater().inflate(R.layout.fragment_start, null));
+        View start = getLayoutInflater().inflate(R.layout.fragment_start, null);
+        container.addView(start);
         ((TextView)findViewById(R.id.title)).setTypeface(ttf);
         ((TextView)findViewById(R.id.btn_start)).setTypeface(ttf);
 
+        Animation a = AnimationUtils.loadAnimation(this, R.anim.fade_in);
+        a.setAnimationListener(new SimpleAnimationListener() {
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                registerStarButtonListener();
+            }
+        });
+        start.startAnimation(a);
+    }
+
+    private void registerStarButtonListener() {
+        ViewGroup container = (ViewGroup)findViewById(R.id.container);
         container.findViewById(R.id.btn_start).setOnClickListener(this);
     }
 
@@ -125,7 +151,14 @@ public class MainActivity extends Activity implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.btn_start) {
-            startGame();
+            Animation a = AnimationUtils.loadAnimation(this, R.anim.pulse);
+            a.setAnimationListener(new SimpleAnimationListener() {
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    startGame();
+                }
+            });
+            v.startAnimation(a);
         } else if (v.getId() == R.id.btn_play_again) {
             showStartFragment();
         } else if (v.getId() == R.id.A121212) {
